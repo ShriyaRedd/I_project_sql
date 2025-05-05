@@ -102,3 +102,47 @@ CREATE TABLE notifications (
     notification_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
+
+
+CREATE TABLE EmployeeSkills (
+    employee_skill_id INT AUTO_INCREMENT PRIMARY KEY,   -- Unique ID for each entry
+    user_id INT NOT NULL,                                -- Foreign Key referencing Users table
+    skill_id INT NOT NULL,                               -- Foreign Key referencing Skills table
+    proficiency_level VARCHAR(50) NOT NULL,              -- Skill proficiency level (e.g., Beginner, Intermediate, Expert)
+    certification_status VARCHAR(50),                    -- Status of certification (Certified, Pending, None)
+    years_of_experience INT,                             -- Number of years of experience in the skill
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,    -- Timestamp for when the skill data was last updated
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),    -- Assuming Users table exists
+    FOREIGN KEY (skill_id) REFERENCES Skills(skill_id)  -- Assuming Skills table exists
+);
+
+
+CREATE TABLE TaskProgress (
+    task_progress_id INT AUTO_INCREMENT PRIMARY KEY,    -- Unique ID for each progress update
+    task_id INT NOT NULL,                                -- Foreign Key referencing Tasks table
+    user_id INT NOT NULL,                                -- Foreign Key referencing Users table (the assignee)
+    status VARCHAR(50) NOT NULL,                         -- Status of the task (In Progress, Completed, Blocked)
+    progress_percentage INT NOT NULL,                    -- Percentage of task completion (0-100%)
+    updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Timestamp for when the progress was last updated
+    comments TEXT,                                       -- Comments or blockers (optional)
+    estimated_time_remaining INT,                        -- Estimated remaining time in hours/days (optional)
+    FOREIGN KEY (task_id) REFERENCES Tasks(task_id),    -- Assuming Tasks table exists
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)     -- Assuming Users table exists
+);
+
+
+CREATE TABLE Reports (
+    report_id INT AUTO_INCREMENT PRIMARY KEY,           -- Unique ID for the report
+    generated_by INT NOT NULL,                           -- User ID of the manager who generated the report
+    report_type VARCHAR(100) NOT NULL,                   -- Type of the report (e.g., Task Progress, Team Performance)
+    date_range_start DATE NOT NULL,                      -- Start date of the report period
+    date_range_end DATE NOT NULL,                        -- End date of the report period
+    task_filter VARCHAR(50),                             -- Filter for task status (Completed, Pending, Overdue)
+    employee_filter INT,                                 -- Filter by employee (optional)
+    skill_filter INT,                                    -- Filter by skill (optional)
+    created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Timestamp for when the report was generated
+    report_data TEXT,                                    -- Data of the report in JSON or CSV format
+    status VARCHAR(50) DEFAULT 'Generated',              -- Report status (Generated, Pending, Archived)
+    FOREIGN KEY (generated_by) REFERENCES Users(user_id) -- Assuming Users table exists
+);
+
